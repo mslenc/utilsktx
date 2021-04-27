@@ -28,3 +28,28 @@ suspend inline fun <T> Iterable<T>.sforEach(crossinline action: suspend (T) -> U
     Unit
 }
 
+/**
+ * Like regular filter(), except it filters the things "concurrently", to improve batching of db calls.
+ */
+suspend inline fun <T> Iterable<T>.sfilter(crossinline condition: suspend (T) -> Boolean): List<T> = supervisorScope {
+    val result = ArrayList<T>()
+    map { async(start = CoroutineStart.UNDISPATCHED) { it to condition(it) } }.forEach {
+        val res = it.await()
+        if (res.second)
+            result += res.first
+    }
+    result
+}
+
+/**
+ * Like regular mapNotNull(), except it maps the things "concurrently", to improve batching of db calls.
+ */
+suspend inline fun <T, R: Any> Iterable<T>.smapNotNull(crossinline transform: suspend (T) -> R?): List<R> = smapNotNullTo(ArrayList<R>(), transform)
+
+/**
+ * Like regular mapNotNullTo(), except it maps the things "concurrently", to improve batching of db calls.
+ */
+suspend inline fun <T, R: Any, C: MutableCollection<in R>> Iterable<T>.smapNotNullTo(destination: C, crossinline transform: suspend (T) -> R?): C = supervisorScope {
+    map { async(start = CoroutineStart.UNDISPATCHED) { transform(it) } }.forEach { deferred -> deferred.await()?.let { destination += it } }
+    destination
+}
