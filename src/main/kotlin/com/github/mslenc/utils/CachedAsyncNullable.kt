@@ -52,7 +52,7 @@ class CachedAsyncNullable<T: Any>(private val compute: suspend ()->T?) {
         }
     }
 
-    private fun wakeUp(result: Result<T?>) = waiters.let { waiters ->
+    private fun wakeUp(result: Result<T?>): Unit = waiters.let { waiters ->
         if (waiters == null)
             return
 
