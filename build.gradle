@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '2.3.10'
+    ext.kotlin_version = '2.3.20'
     ext.coroutines_version = '1.10.2'
     repositories {
         mavenCentral()
@@ -14,14 +14,17 @@ plugins {
 }
 
 group "io.github.mslenc"
-version "1.6.1"
+version "1.7.0"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
+        languageVersion = JavaLanguageVersion.of(17)
     }
     withSourcesJar()
     withJavadocJar()
+}
+kotlin {
+    jvmToolchain(17)
 }
 
 repositories {
@@ -29,17 +32,16 @@ repositories {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$coroutines_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 
-    api "org.slf4j:slf4j-api:1.7.36"
+    api "org.slf4j:slf4j-api:2.0.17"
 
     testImplementation "junit:junit:4.13.2"
-    testImplementation "ch.qos.logback:logback-classic:1.5.6"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.9.23"
+    testImplementation "ch.qos.logback:logback-classic:1.5.32"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit"
 }
 
 publishing {
